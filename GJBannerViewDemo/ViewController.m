@@ -22,8 +22,9 @@
                            @"http://file.bmob.cn/M02/47/31/oYYBAFaXCriAKekUAAZnchatGj8929.png",
                            @"http://file.bmob.cn/M02/47/31/oYYBAFaXCriAKekUAAZnchatGj8929.png"];
     NSArray *titles = @[@"111",@"222",@"333",@"444",@"555"];
-    GJBannerView *banner = [GJBannerView bannerViewWithFrame:CGRectMake(0, 0, 300, 200) bannerSourceType:GJBannerViewSourceTypeNetWork bannerItemType:GJBannerViewItemTypeNormal autoPlay:YES];
+    GJBannerView *banner = [GJBannerView bannerViewWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.width*0.75) bannerSourceType:GJBannerViewSourceTypeNetWork bannerItemType:GJBannerViewItemTypeNormal autoPlay:YES];
     [self.view addSubview:banner];
+    banner.bannerViewPageControlType = GJBannerViewPageControlTypeRight;
     [banner setImageUrls:imageUrls titles:titles autoPlayTime:2];
     // Do any additional setup after loading the view, typically from a nib.
 }

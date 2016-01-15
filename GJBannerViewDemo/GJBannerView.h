@@ -9,16 +9,20 @@
 #import <UIKit/UIKit.h>
 
 typedef NS_ENUM(NSInteger, GJBannerViewSourceType){
-    GJBannerViewSourceTypeNetWork,// image from network --tight with sd webimage;
-    GJBannerViewSourceTypeLocal // image from lacal
+    GJBannerViewSourceTypeNetWork = 10001,// image from network --tight with sd webimage;
+    GJBannerViewSourceTypeLocal = 10002// image from local
 };
 
 typedef NS_ENUM(NSInteger, GJBannerViewItemType){
-    GJBannerViewItemTypeNormal,
-    GJBannerViewItemTypeNoPageControl,
-    GJBannerViewItemTypeCustom
-} ;
-
+    GJBannerViewItemTypeNormal = 10001,
+    GJBannerViewItemTypeNoPageControl = 10002,
+    GJBannerViewItemTypeCustom = 10003// no available now.....
+};
+typedef NS_ENUM(NSInteger, GJBannerViewPageControlType){
+    GJBannerViewPageControlTypeLeft = 10001,
+    GJBannerViewPageControlTypeRight = 10002,
+    GJBannerViewPageControlTypeCenter = 10003// if center the label will not show
+};
 @class GJBannerView;
 
 @protocol GJBannerViewDelegate <NSObject>
@@ -38,8 +42,9 @@ typedef NS_ENUM(NSInteger, GJBannerViewItemType){
 @property (nonatomic, assign) NSTimeInterval interval;
 @property (nonatomic, strong) NSArray<NSString *> *titles;// array of titles of image --- type string
 //properties can be setted from out sides ---but with default values-- from it's getter
-@property (nonatomic, assign) GJBannerViewItemType bannerViewItemType;
-@property (nonatomic, assign) GJBannerViewSourceType bannerViewSourceType;
+@property (nonatomic, assign) GJBannerViewItemType bannerViewItemType;// item type
+@property (nonatomic, assign) GJBannerViewSourceType bannerViewSourceType;// image source type
+@property (nonatomic, assign) GJBannerViewPageControlType bannerViewPageControlType;//page control type;
 @property (nonatomic,assign,getter=isAutoPlay) BOOL autoPlay;
 @property (nonatomic, assign) NSTimeInterval autoPlayTime;
 @property (nonatomic, strong) UIColor *currentControlColor;// the color of current page indicator
@@ -47,7 +52,7 @@ typedef NS_ENUM(NSInteger, GJBannerViewItemType){
 @property (nonatomic, strong) UIColor *titleLableColor;// the color of the label
 @property (nonatomic, strong) UIColor *bottomViewBackGroundColor;// the color of the bottom view back ground
 @property (nonatomic,weak) id<GJBannerViewDelegate> delegate;// delegate to recognize the gesture;
-
+@property (nonatomic,assign) CGFloat bottomHeight;
 // designated initialize method if not use this method , the source type and item type will be normal and net work;
 + (instancetype)bannerViewWithFrame:(CGRect ) frame
                    bannerSourceType:(GJBannerViewSourceType ) bannerSourceType
@@ -66,4 +71,6 @@ typedef NS_ENUM(NSInteger, GJBannerViewItemType){
 // set the color of the page control
 -(void)setCurrentControlColor:(UIColor *)currentControlColor
                  controlColor:(UIColor *)controlColor;
+
+
 @end

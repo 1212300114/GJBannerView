@@ -110,6 +110,18 @@
     }
     return _bottomViewBackGroundColor;
 }
+- (GJBannerViewPageControlType)bannerViewPageControlType{
+    if (!_bannerViewPageControlType) {
+        _bannerViewPageControlType = GJBannerViewPageControlTypeRight;
+    }
+    return _bannerViewPageControlType;
+}
+- (CGFloat)bottomHeight{
+    if (!_bottomHeight) {
+        _bottomHeight = BANNER_HEIGHT/6;
+    }
+    return _bottomHeight;
+}
 #pragma mark - auto change properties
 - (NSMutableArray *)currentImages{
   
@@ -124,7 +136,6 @@
     [_currentImages addObject:self.images[_currentPage]];
     i = (int)(_currentPage + 1)%count;
     [_currentImages addObject:self.images[i]];
-    
     return _currentImages;
 }
 - (NSMutableArray *)currentImageUrls{
@@ -133,8 +144,9 @@
     }
     [_currentImageUrls removeAllObjects];
     NSInteger count = self.imageUrls.count;
+    //add the front one of current
     int i = (int)(_currentPage +count -1)%count;
-    // get the font one in the recycle array (i made it like recycle) just add a count to the page and get the residual;
+    
     [_currentImageUrls addObject:self.imageUrls[i]];
     [_currentImageUrls addObject:self.imageUrls[_currentPage]];
     //get the behind one in the recycle array ;
@@ -210,8 +222,12 @@
                                   CGRectMake(BANNER_WIDTH*i, 0, BANNER_WIDTH, BANNER_HEIGHT)];
         //imageView.image = self.currentImages[i];
         //set the image of these images
-        [imageView sd_setImageWithURL:[NSURL URLWithString: self.currentImageUrls[i]]
-                     placeholderImage:[UIImage imageNamed:@"defaultImage"]];
+        if (self.bannerViewSourceType == GJBannerViewSourceTypeNetWork) {
+            [imageView sd_setImageWithURL:[NSURL URLWithString: self.currentImageUrls[i]]
+                         placeholderImage:[UIImage imageNamed:@"defaultImage"]];
+        }else {
+            imageView.image = self.currentImages[i] ? self.currentImages[i]:[UIImage imageNamed:@"defaultImage"];
+        }
         [scrollView addSubview:imageView];
     }
     [scrollView setContentSize:CGSizeMake(BANNER_WIDTH*3, BANNER_HEIGHT)];
@@ -239,13 +255,25 @@
 // add the page control
 - (void)addPageControl{
     UIView* backGroud = [[UIView alloc]initWithFrame:
-                         CGRectMake(0,BANNER_HEIGHT-40, BANNER_WIDTH,40)];
+                         CGRectMake(0, BANNER_HEIGHT - self.bottomHeight, BANNER_WIDTH,self.bottomHeight)];
+    CGRect pageControlFrame;
+    CGRect titleLabelFrame;
+    if (self.bannerViewPageControlType == GJBannerViewPageControlTypeRight) {
+        pageControlFrame =  CGRectMake(BANNER_WIDTH*0.8, 10, BANNER_WIDTH/6, self.bottomHeight-10);
+        titleLabelFrame = CGRectMake(10, 0, BANNER_WIDTH*0.75, self.bottomHeight);
+    }else if (self.bannerViewPageControlType == GJBannerViewPageControlTypeLeft){
+        pageControlFrame = CGRectMake(0, 10, BANNER_WIDTH/6, self.bottomHeight-10);
+        titleLabelFrame = CGRectMake(BANNER_WIDTH - 10 - BANNER_WIDTH*0.75, 0, BANNER_WIDTH*0.75, self.bottomHeight);
+    }else{
+        pageControlFrame = CGRectMake(BANNER_WIDTH/12*5, 10, BANNER_WIDTH/6, self.bottomHeight-10);
+        titleLabelFrame = CGRectMake(0, 0, 0, 0);
+    }
     
     [backGroud setBackgroundColor:
        self.bottomViewBackGroundColor];
-    UIPageControl* pageControl = [[UIPageControl alloc]initWithFrame:
-                                  CGRectMake(BANNER_WIDTH*0.8, 10, BANNER_WIDTH/5, 30)];
-    [pageControl setNumberOfPages:self.imageUrls.count];
+    UIPageControl* pageControl = [[UIPageControl alloc]initWithFrame:pageControlFrame];
+    
+    [pageControl setNumberOfPages:self.imageUrls.count ? self.imageUrls.count :self.images.count];
     [pageControl setCurrentPage:0];
     [pageControl setUserInteractionEnabled:NO];
     [pageControl setCurrentPageIndicatorTintColor:self.currentControlColor];
@@ -254,13 +282,12 @@
     [backGroud addSubview:pageControl];
     self.pageControl = pageControl;
 
-    UILabel* titleLable = [[UILabel alloc]initWithFrame:CGRectMake(10, 0, BANNER_WIDTH*0.75, 40)];
+    UILabel* titleLable = [[UILabel alloc]initWithFrame:titleLabelFrame];
     titleLable.text = _titles[0];
     titleLable.numberOfLines = 1;
     [backGroud addSubview:titleLable];
-    titleLable.textColor = [UIColor whiteColor];
+    titleLable.textColor = self.titleLableColor;
     self.titleLable = titleLable;
-    
     [self addSubview:backGroud];
 }
 

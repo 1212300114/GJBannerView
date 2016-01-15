@@ -87,7 +87,7 @@
 
 - (UIColor *)currentControlColor{
     if (!_currentControlColor) {
-        _currentControlColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:1];
+        _currentControlColor = [UIColor colorWithRed:0.11 green:0.11 blue:0.11 alpha:1];
     }
     return _currentControlColor;
 }
@@ -262,11 +262,11 @@
         pageControlFrame =  CGRectMake(BANNER_WIDTH*0.8, 10, BANNER_WIDTH/6, self.bottomHeight-10);
         titleLabelFrame = CGRectMake(10, 0, BANNER_WIDTH*0.75, self.bottomHeight);
     }else if (self.bannerViewPageControlType == GJBannerViewPageControlTypeLeft){
-        pageControlFrame = CGRectMake(0, 10, BANNER_WIDTH/6, self.bottomHeight-10);
+        pageControlFrame = CGRectMake(10, 10, BANNER_WIDTH/6, self.bottomHeight-10);
         titleLabelFrame = CGRectMake(BANNER_WIDTH - 10 - BANNER_WIDTH*0.75, 0, BANNER_WIDTH*0.75, self.bottomHeight);
     }else{
         pageControlFrame = CGRectMake(BANNER_WIDTH/12*5, 10, BANNER_WIDTH/6, self.bottomHeight-10);
-        titleLabelFrame = CGRectMake(0, 0, 0, 0);
+        titleLabelFrame = CGRectMake(0, 0, 0, 0);// should remove it but this work
     }
     
     [backGroud setBackgroundColor:
@@ -277,13 +277,15 @@
     [pageControl setCurrentPage:0];
     [pageControl setUserInteractionEnabled:NO];
     [pageControl setCurrentPageIndicatorTintColor:self.currentControlColor];
-    [pageControl setPageIndicatorTintColor:
-     self.controlColor];
+    [pageControl setPageIndicatorTintColor:self.controlColor];
     [backGroud addSubview:pageControl];
     self.pageControl = pageControl;
 
     UILabel* titleLable = [[UILabel alloc]initWithFrame:titleLabelFrame];
     titleLable.text = _titles[0];
+    if (self.bannerViewPageControlType == GJBannerViewPageControlTypeLeft) {
+        titleLable.textAlignment = NSTextAlignmentRight;
+    }
     titleLable.numberOfLines = 1;
     [backGroud addSubview:titleLable];
     titleLable.textColor = self.titleLableColor;
@@ -295,14 +297,19 @@
 #pragma mark - scroll view delegate
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView{
     CGFloat x = scrollView.contentOffset.x;
-
-    if (x >= BANNER_WIDTH*2) {
-        _currentPage = (++_currentPage)%_imageUrls.count;
+    NSInteger count;
+    if (self.bannerViewSourceType == GJBannerViewSourceTypeLocal) {
+        count = self.images.count;
+    }else{
+        count = self.imageUrls.count;
+    }
+    if (x >= BANNER_WIDTH * 2 ) {
+        _currentPage = (++_currentPage)%count;
         self.pageControl.currentPage = _currentPage;
         [self refreshImages];
     }
     if (x <= 0) {
-        _currentPage = (int)(_currentPage + self.imageUrls.count -1)%self.imageUrls.count;
+        _currentPage = (int)(_currentPage + count -1)%count;
         self.pageControl.currentPage = _currentPage;
         [self refreshImages];
     }
@@ -321,8 +328,13 @@
     [self.placeHolderView removeFromSuperview];
     NSArray *subViews = self.scrollView.subviews;
     for (int i = 0; i < subViews.count; i++) {
-        UIImageView* imageView = (UIImageView *)subViews[i];
-        [imageView sd_setImageWithURL:[NSURL URLWithString:self.currentImageUrls[i]]placeholderImage:[UIImage imageNamed:@"defaultImage"]];
+        if (self.bannerViewSourceType == GJBannerViewSourceTypeLocal) {
+            UIImageView *imageView = (UIImageView *)subViews[i];
+            imageView.image = self.images[i];
+        }else {
+            UIImageView* imageView = (UIImageView *)subViews[i];
+            [imageView sd_setImageWithURL:[NSURL URLWithString:self.currentImageUrls[i]]placeholderImage:[UIImage imageNamed:@"defaultImage"]];
+        }
     }
     //move the scroll view offset back to the center ---this is another important thing of my banner
     [self.scrollView setContentOffset:CGPointMake(BANNER_WIDTH, 0)];

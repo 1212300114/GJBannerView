@@ -42,6 +42,7 @@ typedef NS_ENUM(NSInteger, GJBannerViewPageControlType){
 @property (nonatomic, assign) NSTimeInterval interval;
 @property (nonatomic, strong) NSArray<NSString *> *titles;// array of titles of image --- type string
 //properties can be setted from out sides ---but with default values-- from it's getter
+@property (nonatomic, assign,getter=isNoLoop) BOOL noLoop;// useless know
 @property (nonatomic, assign) GJBannerViewItemType bannerViewItemType;// item type
 @property (nonatomic, assign) GJBannerViewSourceType bannerViewSourceType;// image source type
 @property (nonatomic, assign) GJBannerViewPageControlType bannerViewPageControlType;//page control type;

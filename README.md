@@ -25,5 +25,4 @@ put the SourceLib into yout project and use it like below:
 # others  
 I want to add more feature to my banner  like making it can't scroll endless and something else in the feature  
 
-#addition 
-I am a chinese . My English is not very god ..so this read me and the notes inside the code may have grammer bugs .
+
